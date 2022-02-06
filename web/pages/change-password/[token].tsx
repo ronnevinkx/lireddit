@@ -1,15 +1,16 @@
+import { Box, Button, Flex, Link } from '@chakra-ui/react';
+import { Form, Formik } from 'formik';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Box, Button, Link, Flex } from '@chakra-ui/react';
-import { Formik, Form } from 'formik';
 import { useRouter } from 'next/router';
+import { withUrqlClient } from 'next-urql';
+import { useState } from 'react';
+
+import { useChangePasswordMutation } from '../../__generated__/graphql';
 import { InputField } from '../../components/InputField';
 import { Wrapper } from '../../components/Wrapper';
-import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { toErrorMap } from '../../utils/toErrorMap';
-import { useChangePasswordMutation } from '../../__generated__/graphql';
-import { useState } from 'react';
 
 interface ChangePasswordProps {}
 

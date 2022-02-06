@@ -1,11 +1,11 @@
-import { InputHTMLAttributes } from 'react';
-import { useField } from 'formik';
 import {
 	FormControl,
 	FormErrorMessage,
 	FormLabel
 } from '@chakra-ui/form-control';
 import { Input, Textarea } from '@chakra-ui/react';
+import { useField } from 'formik';
+import { InputHTMLAttributes } from 'react';
 
 // set props to that of regular input field, but make name required (necessary for formik)
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {

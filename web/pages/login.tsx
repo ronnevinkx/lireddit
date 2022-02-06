@@ -64,6 +64,12 @@ const Login: React.FC<LoginProps> = () => {
 						<Button mt={4} type="submit" isLoading={isSubmitting}>
 							Log In
 						</Button>
+						<Box mt={6} fontSize="sm">
+							No account yet?{' '}
+							<NextLink href="/register">
+								<Link>Register</Link>
+							</NextLink>
+						</Box>
 					</Form>
 				)}
 			</Formik>

@@ -5,14 +5,14 @@ import { withUrqlClient } from 'next-urql';
 
 import { useCreatePostMutation } from '../__generated__/graphql';
 import { InputField } from '../components/InputField';
-import Layout from '../components/Layout';
+import { Layout } from '../components/Layout';
 import { createUrqlClient } from '../utils/createUrqlClient';
-import { toErrorMap } from '../utils/toErrorMap';
+// import { toErrorMap } from '../utils/toErrorMap';
 import { useIsAuth } from '../utils/useIsAuth';
 
-interface Props {}
+interface CreatePostProps {}
 
-const CreatePost: React.FC<Props> = () => {
+const CreatePost: React.FC<CreatePostProps> = () => {
 	useIsAuth();
 
 	const [, createPost] = useCreatePostMutation();

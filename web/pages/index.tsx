@@ -1,20 +1,27 @@
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/layout';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import NextLink from 'next/link';
 import { withUrqlClient } from 'next-urql';
 import { useState } from 'react';
 
 import { usePostsQuery } from '../__generated__/graphql';
-import Layout from '../components/Layout';
+import EditDeletePostButtons from '../components/EditDeletePostButtons';
+import { Layout } from '../components/Layout';
 import { UpvoteSection } from '../components/UpvoteSection';
 import { createUrqlClient } from '../utils/createUrqlClient';
 
-const Index = () => {
+dayjs.extend(relativeTime);
+
+interface IndexProps {}
+
+const Index: React.FC<IndexProps> = () => {
 	const [variables, setVariables] = useState({
 		limit: 15,
 		cursor: null as null | string
 	});
-	console.log('VARS', variables);
+
 	const [{ data, fetching }] = usePostsQuery({
 		variables
 	});
@@ -25,36 +32,57 @@ const Index = () => {
 
 	return (
 		<Layout>
-			<Flex align="center">
-				<Heading>LiReddit</Heading>
-				<NextLink href="/create-post">
-					<Link ml="auto">Create post</Link>
-				</NextLink>
-			</Flex>
-			<Box mt={6}>
+			<Box>
+				<Heading fontSize="lg">Latest posts</Heading>
+			</Box>
+			<Box mt={4}>
 				{!data && fetching ? (
 					<div>Loading...</div>
 				) : (
 					<Stack spacing={8}>
-						{data!.posts.posts.map(post => (
-							<Flex
-								key={post.id}
-								p={5}
-								shadow="md"
-								borderWidth="1px"
-							>
-								<UpvoteSection post={post} />
-								<Box>
-									<Heading fontSize="xl">
-										{post.title}
-									</Heading>
-									<Text>
-										posted by {post.creator.username}
-									</Text>
-									<Text mt={4}>{post.textSnippet}</Text>
-								</Box>
-							</Flex>
-						))}
+						{data!.posts.posts.map(post =>
+							!post ? null : (
+								<Flex
+									key={post.id}
+									p={5}
+									shadow="md"
+									borderWidth="1px"
+								>
+									<UpvoteSection post={post} />
+
+									<Flex flex={1} align="start">
+										<Box flex={1}>
+											<NextLink
+												href="/post/[id]"
+												as={`/post/${post.id}`}
+											>
+												<Link href={`/post/${post.id}`}>
+													<Heading fontSize="xl">
+														{post.title}
+													</Heading>
+												</Link>
+											</NextLink>
+											<Text>
+												posted by{' '}
+												{post.creator.username}{' '}
+												{dayjs(
+													parseInt(post.createdAt)
+												).fromNow()}
+											</Text>
+											<Text flex={1} mt={4}>
+												{post.textSnippet}
+											</Text>
+										</Box>
+										<Box ml="auto">
+											<EditDeletePostButtons
+												id={post.id}
+												creatorId={post.creator.id}
+											/>
+										</Box>
+									</Flex>
+								</Flex>
+							)
+						)}
 					</Stack>
 				)}
 			</Box>
@@ -77,6 +105,9 @@ const Index = () => {
 					</Button>
 				</Flex>
 			) : null}
+			{data && data.posts?.posts?.length === 0
+				? 'No posts available.'
+				: null}
 		</Layout>
 	);
 };

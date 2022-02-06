@@ -1,6 +1,6 @@
 import { IconButton } from '@chakra-ui/button';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
-import { Flex } from '@chakra-ui/layout';
+import { Box, Flex } from '@chakra-ui/layout';
 import { useState } from 'react';
 
 import { PostSnippetFragment, useVoteMutation } from '../__generated__/graphql';
@@ -13,8 +13,7 @@ export const UpvoteSection: React.FC<UpvoteSectionProps> = ({ post }) => {
 	const [loadingState, setLoadingState] = useState<
 		'upvote-loading' | 'downvote-loading' | 'not-loading'
 	>('not-loading');
-	const [{ operation }, vote] = useVoteMutation();
-	// console.log(operation?.variables?.value); // 1 or 2
+	const [, vote] = useVoteMutation();
 
 	return (
 		<Flex
@@ -27,21 +26,31 @@ export const UpvoteSection: React.FC<UpvoteSectionProps> = ({ post }) => {
 				aria-label="Upvote post"
 				icon={<ChevronUpIcon />}
 				onClick={async () => {
+					if (post.voteStatus === 1) {
+						return;
+					}
+
 					setLoadingState('upvote-loading');
 					await vote({ postId: post.id, value: 1 });
 					setLoadingState('not-loading');
 				}}
+				colorScheme={post.voteStatus === 1 ? 'green' : undefined}
 				isLoading={loadingState === 'upvote-loading'}
 			/>
-			{post.points}
+			<Box my={2}>{post.points}</Box>
 			<IconButton
 				aria-label="Downvote post"
 				icon={<ChevronDownIcon />}
 				onClick={async () => {
+					if (post.voteStatus === -1) {
+						return;
+					}
+
 					setLoadingState('downvote-loading');
 					await vote({ postId: post.id, value: -1 });
 					setLoadingState('not-loading');
 				}}
+				colorScheme={post.voteStatus === -1 ? 'red' : undefined}
 				isLoading={loadingState === 'downvote-loading'}
 			/>
 		</Flex>

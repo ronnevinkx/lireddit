@@ -1,4 +1,5 @@
 import Head from 'next/head';
+
 import { NavBar } from './NavBar';
 import { Wrapper, WrapperVariant } from './Wrapper';
 
@@ -6,7 +7,7 @@ interface LayoutProps {
 	variant?: WrapperVariant;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, variant }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, variant }) => {
 	return (
 		<>
 			<Head>
@@ -17,5 +18,3 @@ const Layout: React.FC<LayoutProps> = ({ children, variant }) => {
 		</>
 	);
 };
-
-export default Layout;
