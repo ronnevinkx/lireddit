@@ -17,6 +17,7 @@ import { isAuth } from '../middleware/isAuth';
 import { getConnection } from 'typeorm';
 import { Post } from '../entities/Post';
 import { Vote } from '../entities/Vote';
+import { User } from '../entities/User';
 
 @InputType()
 export class PostInput {
@@ -44,49 +45,107 @@ export class PostResolver {
 		return root.text.slice(0, 50);
 	}
 
+	@FieldResolver(() => User)
+	creator(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
+		// return User.findOne(post.creatorId);
+		// userLoader reduces all individual user select statements
+		// for homepage to 1 sql statement
+		return userLoader.load(post.creatorId);
+	}
+
+	@FieldResolver(() => Int, { nullable: true })
+	async voteStatus(
+		@Root() post: Post,
+		@Ctx() { voteLoader, req }: MyContext
+	) {
+		if (!req.session.userId) {
+			return null;
+		}
+
+		const vote = await voteLoader.load({
+			postId: post.id,
+			userId: req.session.userId
+		});
+
+		return vote ? vote.value : null;
+	}
+
 	// read all
 	@Query(() => PaginatedPosts)
 	async posts(
 		@Arg('limit', () => Int) limit: number,
-		@Arg('cursor', () => String, { nullable: true }) cursor: string | null,
-		@Ctx() { req }: MyContext
+		@Arg('cursor', () => String, { nullable: true }) cursor: string | null
 	): Promise<PaginatedPosts> {
 		// return Post.find({});
 		// fetch one post extra to see if hasMore should be true (for pagination)
 		const realLimit = Math.min(50, limit);
 		const realLimitPlusOne = realLimit + 1;
+		const replacements: any[] = [realLimitPlusOne];
 
-		// TODO: strange, when using graphql explorer, this thing has userId,
-		// but when we're refreshing the page, it's not there
-		console.log('POSTS SESSION:', req.session);
-		const replacements: any[] = [realLimitPlusOne, req.session.userId];
+		// if (req.session.userId) {
+		// 	replacements.push(req.session.userId);
+		// }
+
+		// let cursorIndex = 3;
 
 		if (cursor) {
 			replacements.push(new Date(parseInt(cursor)));
+			// cursorIndex = replacements.length;
 		}
 
 		const posts = await getConnection().query(
 			`
-			SELECT p.*,
-			json_build_object(
-				'id', u.id,
-				'username', u.username,
-				'email', u.email,
-				'updatedAt', u."updatedAt",
-				'createdAt', u."createdAt") creator,
-			${
-				req.session.userId
-					? '(SELECT value FROM vote WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
-					: 'NULL AS "voteStatus"'
-			}
+			SELECT p.*
 			FROM post p
 			INNER JOIN public.user u ON u.id = p."creatorId"
-			${cursor ? `WHERE p."createdAt" < $3` : ''}
+			${cursor ? `WHERE p."createdAt" < $2` : ''}
 			ORDER BY p."createdAt" DESC
 			LIMIT $1
 		`,
 			replacements
 		);
+
+		// with dataloader:
+		// const posts = await getConnection().query(
+		// 	`
+		// 	SELECT p.*,
+		// 	${
+		// 		req.session.userId
+		// 			? '(SELECT value FROM vote WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
+		// 			: 'NULL AS "voteStatus"'
+		// 	}
+		// 	FROM post p
+		// 	INNER JOIN public.user u ON u.id = p."creatorId"
+		// 	${cursor ? `WHERE p."createdAt" < $${cursorIndex}` : ''}
+		// 	ORDER BY p."createdAt" DESC
+		// 	LIMIT $1
+		// `,
+		// 	replacements
+		// );
+
+		// without dataloader:
+		// const posts = await getConnection().query(
+		// 	`
+		// 	SELECT p.*,
+		// 	json_build_object(
+		// 		'id', u.id,
+		// 		'username', u.username,
+		// 		'email', u.email,
+		// 		'updatedAt', u."updatedAt",
+		// 		'createdAt', u."createdAt") creator,
+		// 	${
+		// 		req.session.userId
+		// 			? '(SELECT value FROM vote WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
+		// 			: 'NULL AS "voteStatus"'
+		// 	}
+		// 	FROM post p
+		// 	INNER JOIN public.user u ON u.id = p."creatorId"
+		// 	${cursor ? `WHERE p."createdAt" < $${cursorIndex}` : ''}
+		// 	ORDER BY p."createdAt" DESC
+		// 	LIMIT $1
+		// `,
+		// 	replacements
+		// );
 
 		// const qb = getConnection()
 		// 	.getRepository(Post)
@@ -112,20 +171,40 @@ export class PostResolver {
 
 	// read single
 	@Query(() => Post, { nullable: true })
-	async post(@Arg('id') id: number): Promise<Post | undefined> {
-		// return Post.findOne(id);
+	async post(@Arg('id', () => Int) id: number): Promise<Post | undefined> {
+		// relation no longer needed with dataloader and fieldresolver for creator
+		return Post.findOne(id);
+		// return Post.findOne(id, { relations: ['creator'] });
 
-		const post = await getConnection().query(
-			`
-			SELECT p.*, json_build_object('id', u.id, 'username', u.username, 'email', u.email, 'updatedAt', u."updatedAt", 'createdAt', u."createdAt") creator
-			FROM post p
-			INNER JOIN public.user u ON u.id = p."creatorId"
-			WHERE p."id" = $1
-		`,
-			[id]
-		);
+		// json_build_object(
+		// 	'id', u.id,
+		// 	'username', u.username,
+		// 	'email', u.email,
+		// 	'updatedAt', u."updatedAt",
+		// 	'createdAt', u."createdAt") creator,
+		// ${
+		// 	req.session.userId
+		// 		? '(SELECT value FROM vote WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
+		// 		: 'NULL AS "voteStatus"'
+		// }
 
-		return post[0];
+		// const post = await getConnection().query(
+		// 	`
+		// 	SELECT p.*,
+		// 	json_build_object(
+		// 		'id', u.id,
+		// 		'username', u.username,
+		// 		'email', u.email,
+		// 		'updatedAt', u."updatedAt",
+		// 		'createdAt', u."createdAt") creator
+		// 	FROM post p
+		// 	INNER JOIN public.user u ON u.id = p."creatorId"
+		// 	WHERE p."id" = $1
+		// `,
+		// 	[id]
+		// );
+
+		// return post[0];
 	}
 
 	// create
@@ -141,32 +220,57 @@ export class PostResolver {
 
 	// update
 	@Mutation(() => Post, { nullable: true })
+	@UseMiddleware(isAuth)
 	async updatePost(
-		@Arg('id') id: number,
-		@Arg('title', () => String, { nullable: true }) title: string
+		@Arg('id', () => Int) id: number,
+		@Arg('title') title: string,
+		@Arg('text') text: string,
+		@Ctx() { req }: MyContext
 	): Promise<Post | null> {
-		const post = await Post.findOne(id);
+		const result = await getConnection()
+			.createQueryBuilder()
+			.update(Post)
+			.set({ title, text })
+			.where('id = :id AND "creatorId" = :creatorId', {
+				id,
+				creatorId: req.session.userId
+			})
+			.returning('*')
+			.execute();
 
-		if (!post) {
-			return null;
-		}
-
-		if (typeof title !== 'undefined') {
-			await Post.update({ id }, { title });
-		}
-
-		return post;
+		return result.raw[0];
 	}
 
 	// delete
 	@Mutation(() => Boolean)
-	async deletePost(@Arg('id') id: number): Promise<boolean> {
-		try {
-			await Post.delete(id);
-			return true;
-		} catch (error) {
-			return false;
-		}
+	@UseMiddleware(isAuth)
+	async deletePost(
+		@Arg('id', () => Int) id: number,
+		@Ctx() { req }: MyContext
+	): Promise<boolean> {
+		// now that we've set `onDelete: 'CASCADE'` at the Vote entity,
+		// we can simply do this and the deletion will cascade to any votes
+		// of the post the downside is, the non-cascade is more explicit to
+		// developers, so it depends on the project what's best
+		await Post.delete({ id, creatorId: req.session.userId });
+		return true;
+
+		// non-cascade way
+		// const post = await Post.findOne(id);
+
+		// if (!post) {
+		// 	return false;
+		// }
+
+		// // only delete posts that you own
+		// if (post.creatorId !== req.session.userId) {
+		// 	throw new Error('Not authorized to delete this post');
+		// }
+
+		// await Vote.delete({ postId: id });
+		// await Post.delete({ id });
+
+		// return true;
 	}
 
 	// vote

@@ -188,7 +188,7 @@ export class UserResolver {
 			1000 * 60 * 60 * 24 * 3
 		);
 
-		const link = `${process.env.WEB_CLIENT}/change-password/${token}`;
+		const link = `${process.env.DOMAIN}/change-password/${token}`;
 		const text = `Please reset your password here: ${link}`;
 		const html = `<a href="${link}">Reset password</a>`;
 

@@ -1,60 +1,51 @@
-import 'reflect-metadata';
-// import { MikroORM } from '@mikro-orm/core';
-// import mikroConfig from './mikro-orm.config';
-import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
+import connectRedis from 'connect-redis';
+import cors from 'cors';
+import 'dotenv-safe/config';
+import express from 'express';
+import session from 'express-session';
+import Redis from 'ioredis';
+import path from 'path';
+import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
+import { createConnection } from 'typeorm';
+import { COOKIE_NAME, __prod__ } from './constants';
+import { Post } from './entities/Post';
+import { User } from './entities/User';
+import { Vote } from './entities/Vote';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-import Redis from 'ioredis';
-import session from 'express-session';
-import connectRedis from 'connect-redis';
-import { COOKIE_NAME, __prod__ } from './constants';
 import { MyContext } from './types';
-import cors from 'cors';
-import { createConnection } from 'typeorm';
-import { User } from './entities/User';
-import { Post } from './entities/Post';
-import { Vote } from './entities/Vote';
-import path from 'path';
+import { createUserLoader } from './utils/createUserLoader';
+import { createVoteLoader } from './utils/createVoteLoader';
 
 const main = async () => {
-	// sendEmail('ronnevinkx@gmail.com', 'Hi Ronne! This is Node.js');
-	require('dotenv').config();
-
 	const conn = await createConnection({
 		type: 'postgres',
-		database: 'lireddit2',
-		username: 'postgres',
-		password: 'postgres',
+		url: process.env.DATABASE_URL,
 		logging: true,
-		synchronize: true,
+		// synchronize: true,
 		migrations: [path.join(__dirname, './migrations/*')],
 		entities: [Post, User, Vote]
 	});
 
-	await conn.runMigrations();
-
-	// await Post.delete({});
-
-	// connect to db
-	// const orm = await MikroORM.init(mikroConfig);
-
-	// deletes all users
-	// await orm.em.nativeDelete(User, {});
-
-	// run migrations
-	// orm.getMigrator().up();
+	if (__prod__) {
+		// this creates tables when server starts, using the "Initial" migration
+		await conn.runMigrations();
+	}
 
 	const app = express();
-	const PORT = process.env.PORT || 4000;
+	const PORT = parseInt(process.env.PORT) || 4000;
 	const NODE_ENV = process.env.NODE_ENV || 'development';
 	const WEB_CLIENT = process.env.WEB_CLIENT || 'http://localhost:3000';
 
 	// redis setup
 	const RedisStore = connectRedis(session);
-	const redis = new Redis();
+	const redis = new Redis(process.env.REDIS_URL);
+
+	// tell express we have a proxy (dokku's nginx) sitting in front, so cookies and sessions work
+	app.set('proxy', 1);
 
 	// set cors on all routes
 	// we also could've set it for just apollo route at apollo setup,
@@ -65,17 +56,18 @@ const main = async () => {
 		session({
 			name: COOKIE_NAME,
 			store: new RedisStore({
-				client: redis,
+				client: redis as any,
 				disableTouch: true
 			}),
 			cookie: {
 				maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
 				httpOnly: true, // httpOnly, so not available in frontend JS
 				sameSite: 'lax', // csrf
-				secure: __prod__ // when in prod, cookie only works in https
+				secure: __prod__, // when in prod, cookie only works in https
+				domain: __prod__ ? process.env.COOKIEDOMAIN : undefined
 			},
 			saveUninitialized: false,
-			secret: process.env.REDIS_SECRET || 'x#er@$tSrD*%^s#4$^6_$^k',
+			secret: process.env.REDIS_SECRET,
 			resave: false
 		})
 	);
@@ -86,7 +78,13 @@ const main = async () => {
 			resolvers: [HelloResolver, PostResolver, UserResolver],
 			validate: false
 		}),
-		context: ({ req, res }): MyContext => ({ req, res, redis })
+		context: ({ req, res }): MyContext => ({
+			req,
+			res,
+			redis,
+			userLoader: createUserLoader(),
+			voteLoader: createVoteLoader()
+		})
 	});
 
 	apolloServer.applyMiddleware({ app, cors: false });

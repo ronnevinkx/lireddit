@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class FakePosts16389068030241 implements MigrationInterface {
-	public async up(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(`insert into post (title, text, "creatorId", "createdAt") values ('Callejón de los milagros, El', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 1, '2021-07-24T18:24:57Z');
+	public async up(_: QueryRunner): Promise<void> {
+		/*await queryRunner.query(`insert into post (title, text, "creatorId", "createdAt") values ('Callejón de los milagros, El', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 1, '2021-07-24T18:24:57Z');
 		insert into post (title, text, "creatorId", "createdAt") values ('The Stoker', 'Duis aliquam convallis nunc. Proin at turpis a pede posuere nonummy. Integer non velit.', 1, '2021-11-15T02:53:13Z');
 		insert into post (title, text, "creatorId", "createdAt") values ('Woman''s Face, A', 'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.
 		
@@ -2938,7 +2938,7 @@ export class FakePosts16389068030241 implements MigrationInterface {
 		insert into post (title, text, "creatorId", "createdAt") values ('Dirt Bike Kid, The', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.
 		
 		Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 1, '2021-02-04T13:38:24Z');
-		`);
+		`);*/
 	}
 
 	public async down(_: QueryRunner): Promise<void> {}
