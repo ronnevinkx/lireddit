@@ -142,7 +142,7 @@ How the session works:
 -   Kill a service? `npx kill-port 4000` for GraphQL, or `npx kill-port 6379` for Redis.
 -   Manually, you could lookup the PID and then kill the process, but this is faster.
 
-## Server Deployment (Backend/API)
+## Backend Deployment (Server, or "API")
 
 Hostname (DigitalOcean Droplet name)
 `lireddit`
@@ -188,17 +188,16 @@ VPS is now set up.
 
 ### 3. Build and deploy image
 
+Use this exact process also when updating the server:
+
 1. From server folder: `docker build -t ronnevinkx/lireddit:1.0 .`
 2. Push to Docker Hub: `docker push ronnevinkx/lireddit:1.0`
-3. Dokku Image Tag Deployment, deploying from a Docker registry
-   SSH into the server, `docker login` to log into Docker Hub and:
+3. SSH into the server, `docker login` to log into Docker Hub and:
    `docker pull ronnevinkx/lireddit:1.0`
-4. Tag the pulled image: `docker tag ronnevinkx/lireddit:1.0 dokku/api:1.0`
-5. Deploy tag: `dokku tags:deploy api 1.0`
+4. Tag the pulled image: `docker tag ronnevinkx/lireddit:1.0 dokku/api:latest`
+5. Deploy tag: `dokku tags:deploy api latest`
 
-Application deployed:
-http://api.dokku0214onubuntu2004-s-1vcpu-1gb-ams3-01
-http://api.dokku0214onubuntu2004-s-1vcpu-1gb-ams3-01:8080
+Application deployed!
 
 ### 4. Set up DNS
 
@@ -230,7 +229,7 @@ Let this propagate for some time.
 
 `https://lireddit-api.ronnevinkx.nl/` should now work with SSL and say "Cannot GET /".
 
-## Web Deployment (Frontend)
+## Frontend Deployment (Web)
 
 Deploy to different server (Vercel), so we can take load off of API.
 
@@ -242,19 +241,22 @@ Deploy to different server (Vercel), so we can take load off of API.
 4. Create a CNAME record in Cloudflare pointing `lireddit` to `cname.vercel-dns.com`
    and don't proxy it, use Vercel's DNS.
 
+## Make deploy script executable
+
+`chmod +x deploy.sh`
+
 ## TODO
 
 -   Install Husky with eslint, prettier and conventional commit check, changelog generation...
 -   Deploy to GCP
--   fix all TODO comments
+-   when creating user, email not available on server, but works locally
 -   update cache after posting a post
--   Protect routes like `register` against authenticated users. Do this serverside, so there's no flash of authenticated content (though this might not be an issue in PROD, perhaps only in Next.js DEV)
 -   Upgrade all packages (one by one) and see what happens
--   how to handle n+1 problem: lots of sql without joins? dataloader
 
 ## Notes
 
--   We're `12:49:00` in
+-   We're `13:03:00` in
+-   How to handle n+1 problem: lots of sql without joins? dataloader
 -   Best practice to use underscore when not using a parameter, like `(_, res)` instead of `(req, res)` when not using `req`.
 -   At end of a thing that needs import, press `ctrl + space` to auto-complete the import statement
 -   Installed `class-validator` to get rid of some TS error on server

@@ -8,19 +8,22 @@ import { useState } from 'react';
 
 import { useChangePasswordMutation } from '../../__generated__/graphql';
 import { InputField } from '../../components/InputField';
-import { Wrapper } from '../../components/Wrapper';
+import { Layout } from '../../components/Layout';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { toErrorMap } from '../../utils/toErrorMap';
+import { useIsNotAuth } from '../../utils/useIsNotAuth';
 
 interface ChangePasswordProps {}
 
 const ChangePassword: NextPage<ChangePasswordProps> = () => {
+	useIsNotAuth();
+
 	const router = useRouter();
 	const [, changePassword] = useChangePasswordMutation();
 	const [tokenError, setTokenError] = useState('');
 
 	return (
-		<Wrapper variant="small">
+		<Layout variant="small">
 			<Formik
 				initialValues={{ newPassword: '' }}
 				onSubmit={async (values, { setErrors }) => {
@@ -75,7 +78,7 @@ const ChangePassword: NextPage<ChangePasswordProps> = () => {
 					</Form>
 				)}
 			</Formik>
-		</Wrapper>
+		</Layout>
 	);
 };
 

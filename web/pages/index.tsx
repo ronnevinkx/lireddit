@@ -76,6 +76,7 @@ const Index: React.FC<IndexProps> = () => {
 										<Box ml="auto">
 											<EditDeletePostButtons
 												id={post.id}
+												prev="/"
 												creatorId={post.creator.id}
 											/>
 										</Box>

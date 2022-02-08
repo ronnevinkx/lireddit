@@ -13,7 +13,6 @@ import { COOKIE_NAME, __prod__ } from './constants';
 import { Post } from './entities/Post';
 import { User } from './entities/User';
 import { Vote } from './entities/Vote';
-import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { MyContext } from './types';
@@ -45,7 +44,7 @@ const main = async () => {
 	const redis = new Redis(process.env.REDIS_URL);
 
 	// tell express we have a proxy (dokku's nginx) sitting in front, so cookies and sessions work
-	app.set('proxy', 1);
+	app.set('trust proxy', 1);
 
 	// set cors on all routes
 	// we also could've set it for just apollo route at apollo setup,
@@ -75,7 +74,7 @@ const main = async () => {
 	// apollo setup
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [HelloResolver, PostResolver, UserResolver],
+			resolvers: [PostResolver, UserResolver],
 			validate: false
 		}),
 		context: ({ req, res }): MyContext => ({

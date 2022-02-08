@@ -27,6 +27,7 @@ const Post: React.FC<PostProps> = () => {
 			<Box mb={4}>{data.post.text}</Box>
 			<EditDeletePostButtons
 				id={data.post.id}
+				prev={`/post/${data.post.id}`}
 				creatorId={data.post.creator.id}
 			/>
 		</Layout>

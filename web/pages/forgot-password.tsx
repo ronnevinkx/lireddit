@@ -5,17 +5,20 @@ import { useState } from 'react';
 
 import { useForgotPasswordMutation } from '../__generated__/graphql';
 import { InputField } from '../components/InputField';
-import { Wrapper } from '../components/Wrapper';
+import { Layout } from '../components/Layout';
 import { createUrqlClient } from '../utils/createUrqlClient';
+import { useIsNotAuth } from '../utils/useIsNotAuth';
 
 interface ForgotPasswordProps {}
 
 const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
+	useIsNotAuth();
+
 	const [completed, setCompleted] = useState(false);
 	const [, forgotPassword] = useForgotPasswordMutation();
 
 	return (
-		<Wrapper variant="small">
+		<Layout variant="small">
 			<Formik
 				initialValues={{ email: '' }}
 				onSubmit={async values => {
@@ -52,7 +55,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
 					)
 				}
 			</Formik>
-		</Wrapper>
+		</Layout>
 	);
 };
 

@@ -26,6 +26,13 @@ const EditPost: React.FC<EditPostProps> = () => {
 	const [, updatePost] = useUpdatePostMutation();
 	const router = useRouter();
 
+	const backToValidPrevPage = (): void => {
+		const nextPage = router.query.prev
+			? (router.query.prev as string)
+			: '/';
+		router.push(nextPage);
+	};
+
 	if (fetching) {
 		return <div>Loading...</div>;
 	}
@@ -45,9 +52,7 @@ const EditPost: React.FC<EditPostProps> = () => {
 					});
 
 					if (!error) {
-						// router.push('/');
-						// TODO: make sure user comes from allowed url (/ or /post/[id])
-						router.back();
+						backToValidPrevPage();
 					}
 				}}
 			>
