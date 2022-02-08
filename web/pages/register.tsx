@@ -1,6 +1,7 @@
 import { Box, Button, Link } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { withUrqlClient } from 'next-urql';
 
 import { useRegisterMutation } from '../__generated__/graphql';
@@ -15,6 +16,7 @@ interface RegisterProps {}
 const Register: React.FC<RegisterProps> = () => {
 	useIsNotAuth();
 
+	const router = useRouter();
 	const [, register] = useRegisterMutation();
 
 	return (

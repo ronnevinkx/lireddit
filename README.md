@@ -256,6 +256,7 @@ Deploy to different server (Vercel), so we can take load off of API.
 ## Notes
 
 -   We're `13:03:00` in
+-   Branch `apollo` created for Apollo (starting at 13:03:00)
 -   How to handle n+1 problem: lots of sql without joins? dataloader
 -   Best practice to use underscore when not using a parameter, like `(_, res)` instead of `(req, res)` when not using `req`.
 -   At end of a thing that needs import, press `ctrl + space` to auto-complete the import statement
