@@ -1,8 +1,8 @@
+import { useApolloClient } from '@apollo/client';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 
 import { useLogoutMutation, useMeQuery } from '../__generated__/graphql';
 import { isServer } from '../utils/isServer';
@@ -10,20 +10,20 @@ import { isServer } from '../utils/isServer';
 interface NavBarProps {}
 
 export const NavBar: React.FC<NavBarProps> = () => {
-	const router = useRouter();
-	const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
+	const [logout, { loading: logoutLoading }] = useLogoutMutation();
+	const apolloClient = useApolloClient();
 
 	// don't execute this query on the server (e.g. on index page which is ssr),
 	// because server doesn't have cookie. this would lead to me: null, so no user in navbar
 	// later: we sent cookie to server via fetchOptions, but let's run this client-only anyway
-	const [{ data, fetching }] = useMeQuery({
-		pause: isServer()
+	const { data, loading } = useMeQuery({
+		skip: isServer()
 	});
 
 	let body = null;
 
 	// on server, data should be undefined, since we paused the query there
-	if (fetching) {
+	if (loading) {
 		// data is loading
 	} else if (!data?.me) {
 		// user not logged in
@@ -50,9 +50,9 @@ export const NavBar: React.FC<NavBarProps> = () => {
 				<Button
 					onClick={async () => {
 						await logout();
-						router.reload();
+						await apolloClient.resetStore();
 					}}
-					isLoading={logoutFetching}
+					isLoading={logoutLoading}
 					variant="link"
 				>
 					Log Out

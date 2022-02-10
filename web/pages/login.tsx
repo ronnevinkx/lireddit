@@ -2,14 +2,17 @@ import { Box, Button, Link } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { withUrqlClient } from 'next-urql';
 
-import { useLoginMutation } from '../__generated__/graphql';
+import {
+	MeDocument,
+	MeQuery,
+	useLoginMutation
+} from '../__generated__/graphql';
 import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
-import { createUrqlClient } from '../utils/createUrqlClient';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useIsNotAuth } from '../utils/useIsNotAuth';
+import { withApollo } from '../utils/withApollo';
 
 interface LoginProps {}
 
@@ -17,14 +20,26 @@ const Login: React.FC<LoginProps> = () => {
 	useIsNotAuth();
 
 	const router = useRouter();
-	const [, login] = useLoginMutation();
+	const [login] = useLoginMutation();
 
 	return (
 		<Layout variant="small">
 			<Formik
 				initialValues={{ usernameOrEmail: '', password: '' }}
 				onSubmit={async (values, { setErrors }) => {
-					const res = await login(values);
+					const res = await login({
+						variables: values,
+						update: (cache, { data }) => {
+							cache.writeQuery<MeQuery>({
+								query: MeDocument,
+								data: {
+									__typename: 'Query',
+									me: data?.login.user
+								}
+							});
+							cache.evict({ fieldName: 'posts' });
+						}
+					});
 
 					if (res.data?.login.errors) {
 						setErrors(toErrorMap(res.data.login.errors));
@@ -80,4 +95,4 @@ const Login: React.FC<LoginProps> = () => {
 	);
 };
 
-export default withUrqlClient(createUrqlClient)(Login);
+export default withApollo({ ssr: false })(Login);

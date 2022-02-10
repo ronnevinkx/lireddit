@@ -13,7 +13,7 @@ https://www.youtube.com/watch?v=I6ypD7qv3Z8
 | TypeScript             | JS-based programming language             |
 | Chakra UI              | Styling framework                         |
 | Formik                 | Helps building forms in React             |
-| urql                   | GraphQL client                            |
+| Apollo                 | GraphQL client                            |
 | Graphcache             | Configurable, normalized caching for urql |
 | GraphQL Code Generator | Generate types and urql hooks             |
 | next-urql              | SSR for urql in a Next.js project         |
@@ -57,13 +57,14 @@ Universal React Query Library, alternative to Apollo Client. We can wrap a page 
 
 ### Scripts
 
-| Script  | Runs Command                           | Description                      |
-| ------- | -------------------------------------- | -------------------------------- |
-| `dev`   | `next dev`                             | Start server in dev mode         |
-| `build` | `next build`                           | Build app                        |
-| `start` | `next start`                           | Start server                     |
-| `lint`  | `next lint`                            | Run code linter                  |
-| `gen`   | `graphql-codegen --config codegen.yml` | Generate GraphQL types and hooks |
+| Script      | Runs Command                           | Description                      |
+| ----------- | -------------------------------------- | -------------------------------- |
+| `dev`       | `next dev`                             | Start server in dev mode         |
+| `build`     | `next build`                           | Build app                        |
+| `start`     | `next start`                           | Start server                     |
+| `lint`      | `next lint`                            | Run code linter                  |
+| `gen`       | `graphql-codegen --config codegen.yml` | Generate GraphQL types and hooks |
+| `typecheck` | `tsc --noEmit --project tsconfig.json` | Check for type errors            |
 
 ## Backend
 
@@ -255,8 +256,8 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 ## Notes
 
--   We're `13:03:00` in
--   Branch `apollo` created for Apollo (starting at 13:03:00)
+-   Should logged out user be able to vote?
+-   Branch `apollo` created for Apollo Client (starting at 13:03:00)
 -   How to handle n+1 problem: lots of sql without joins? dataloader
 -   Best practice to use underscore when not using a parameter, like `(_, res)` instead of `(req, res)` when not using `req`.
 -   At end of a thing that needs import, press `ctrl + space` to auto-complete the import statement

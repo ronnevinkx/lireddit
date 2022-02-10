@@ -3,30 +3,27 @@ import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/layout';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import NextLink from 'next/link';
-import { withUrqlClient } from 'next-urql';
-import { useState } from 'react';
 
 import { usePostsQuery } from '../__generated__/graphql';
 import EditDeletePostButtons from '../components/EditDeletePostButtons';
 import { Layout } from '../components/Layout';
 import { UpvoteSection } from '../components/UpvoteSection';
-import { createUrqlClient } from '../utils/createUrqlClient';
+import { withApollo } from '../utils/withApollo';
 
 dayjs.extend(relativeTime);
 
 interface IndexProps {}
 
 const Index: React.FC<IndexProps> = () => {
-	const [variables, setVariables] = useState({
-		limit: 15,
-		cursor: null as null | string
+	const { data, loading, fetchMore, variables } = usePostsQuery({
+		variables: {
+			limit: 15,
+			cursor: null
+		},
+		notifyOnNetworkStatusChange: true
 	});
 
-	const [{ data, fetching }] = usePostsQuery({
-		variables
-	});
-
-	if (!fetching && !data) {
+	if (!loading && !data) {
 		return <div>Failed to load posts.</div>;
 	}
 
@@ -36,7 +33,7 @@ const Index: React.FC<IndexProps> = () => {
 				<Heading fontSize="lg">Latest posts</Heading>
 			</Box>
 			<Box mt={4}>
-				{!data && fetching ? (
+				{!data && loading ? (
 					<div>Loading...</div>
 				) : (
 					<Stack spacing={8}>
@@ -91,14 +88,41 @@ const Index: React.FC<IndexProps> = () => {
 				<Flex>
 					<Button
 						onClick={() =>
-							setVariables({
-								...variables,
-								cursor: data.posts.posts[
-									data.posts.posts.length - 1
-								].createdAt
+							fetchMore({
+								variables: {
+									limit: variables?.limit,
+									cursor: data.posts.posts[
+										data.posts.posts.length - 1
+									].createdAt
+								}
+								// updateQuery: (
+								// 	previousValue,
+								// 	{ fetchMoreResult }
+								// ): PostsQuery => {
+								// 	if (!fetchMoreResult) {
+								// 		return previousValue;
+								// 	}
+
+								// 	return {
+								// 		__typename: 'Query',
+								// 		posts: {
+								// 			__typename: 'PaginatedPosts',
+								// 			hasMore: (
+								// 				fetchMoreResult as PostsQuery
+								// 			).posts.hasMore,
+								// 			posts: [
+								// 				...(previousValue as PostsQuery)
+								// 					.posts.posts,
+								// 				...(
+								// 					fetchMoreResult as PostsQuery
+								// 				).posts.posts
+								// 			]
+								// 		}
+								// 	};
+								// }
 							})
 						}
-						isLoading={fetching}
+						isLoading={loading}
 						m="auto"
 						my={8}
 					>
@@ -113,4 +137,4 @@ const Index: React.FC<IndexProps> = () => {
 	);
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default withApollo({ ssr: true })(Index);

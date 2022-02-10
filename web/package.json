@@ -7,15 +7,16 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"gen": "graphql-codegen --config codegen.yml"
+		"gen": "graphql-codegen --config codegen.yml",
+		"typecheck": "tsc --noEmit --project tsconfig.json"
 	},
 	"dependencies": {
+		"@apollo/client": "^3.5.8",
 		"@chakra-ui/icons": "^1.0.16",
 		"@chakra-ui/react": "^1.8.3",
 		"@chakra-ui/theme-tools": "^1.2.2",
 		"@emotion/react": "^11.5.0",
 		"@emotion/styled": "^11.3.0",
-		"@urql/exchange-graphcache": "^4.3.5",
 		"dayjs": "^1.10.7",
 		"formik": "^2.2.9",
 		"framer-motion": "^5.0.0",
@@ -23,17 +24,16 @@
 		"graphql-tag": "^2.12.6",
 		"isomorphic-unfetch": "^3.1.0",
 		"next": "^12.0.2",
-		"next-urql": "^3.2.1",
+		"next-apollo": "^5.0.8",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"react-is": "^17.0.2",
-		"urql": "^2.0.5"
+		"react-is": "^17.0.2"
 	},
 	"devDependencies": {
 		"@graphql-codegen/cli": "^2.2.2",
 		"@graphql-codegen/typescript": "^2.3.0",
 		"@graphql-codegen/typescript-operations": "^2.2.0",
-		"@graphql-codegen/typescript-urql": "^3.3.0",
+		"@graphql-codegen/typescript-react-apollo": "^3.2.5",
 		"eslint": "^8.1.0",
 		"eslint-config-next": "^12.0.2",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
