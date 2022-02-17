@@ -49,7 +49,6 @@ const Index: React.FC<IndexProps> = () => {
 									borderWidth="1px"
 								>
 									<UpvoteSection post={post} />
-
 									<Flex flex={1} align="start">
 										<Box flex={1}>
 											<NextLink
