@@ -14,7 +14,6 @@ import { InputField } from '../../components/InputField';
 import { Layout } from '../../components/Layout';
 import { toErrorMap } from '../../utils/toErrorMap';
 import { useIsNotAuth } from '../../utils/useIsNotAuth';
-import { withApollo } from '../../utils/withApollo';
 
 interface ChangePasswordProps {}
 
@@ -96,4 +95,4 @@ const ChangePassword: NextPage<ChangePasswordProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: false })(ChangePassword);
+export default ChangePassword;

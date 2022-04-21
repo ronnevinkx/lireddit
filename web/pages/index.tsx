@@ -2,13 +2,14 @@ import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/layout';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { NextPageContext } from 'next';
 import NextLink from 'next/link';
 
-import { usePostsQuery } from '../__generated__/graphql';
+import { PostsDocument, usePostsQuery } from '../__generated__/graphql';
 import EditDeletePostButtons from '../components/EditDeletePostButtons';
 import { Layout } from '../components/Layout';
 import { UpvoteSection } from '../components/UpvoteSection';
-import { withApollo } from '../utils/withApollo';
+import { addApolloState, initializeApollo } from '../utils/apolloClient';
 
 dayjs.extend(relativeTime);
 
@@ -137,4 +138,26 @@ const Index: React.FC<IndexProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: true })(Index);
+// getStaticProps works and gives us SSG
+// getServerSideProps works and gives us SSR
+// important with getServerSideProps to pass context as it contains our qid cookie,
+// otherwise voteStatus (did the logged-in user vote for a post?) wouldn't be able
+// to resolve properly. on the client this works eitherway, but to get it working
+// on the server, make sure to pass the context.
+export async function getServerSideProps(context: NextPageContext) {
+	const apolloClient = initializeApollo(null, context);
+
+	await apolloClient.query({
+		query: PostsDocument,
+		variables: {
+			limit: 15,
+			cursor: null
+		}
+	});
+
+	return addApolloState(apolloClient, {
+		props: {}
+	});
+}
+
+export default Index;

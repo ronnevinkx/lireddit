@@ -94,7 +94,7 @@ Simply create a database called `lireddit` with `psql`.
 -   Terminal 3: `yarn dev` on server, this runs and auto-refreshes `dist/index.js` on changes with nodemon. So we basically have a chain.
 -   Terminal 4: `yarn dev` on web frontend client.
 
-Now you can visit the frontend at `http://localhost:3000/`.
+Now you can visit the frontend at `http://localhost:3000/`
 GraphQL endpoint: `http://localhost:4000/graphql`
 
 ### MikroORM
@@ -193,7 +193,7 @@ Use this exact process also when updating the server:
 
 1. From server folder: `docker build -t ronnevinkx/lireddit:1.0 .`
 2. Push to Docker Hub: `docker push ronnevinkx/lireddit:1.0`
-3. SSH into the server, `docker login` to log into Docker Hub and:
+3. SSH into the server (142.93.234.17), `docker login` to log into Docker Hub and:
    `docker pull ronnevinkx/lireddit:1.0`
 4. Tag the pulled image: `docker tag ronnevinkx/lireddit:1.0 dokku/api:latest`
 5. Deploy tag: `dokku tags:deploy api latest`
@@ -248,6 +248,8 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 ## TODO
 
+-   BUG: cannot create post (when logged in) because cookie isn't send to graphql (in apolloClient.ts)
+-   BUG: keeping login state? (same as above presumably)
 -   Install Husky with eslint, prettier and conventional commit check, changelog generation...
 -   Deploy to GCP
 -   when creating user, email not available on server, but works locally
@@ -256,6 +258,8 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 ## Notes
 
+-   This project is SSR because of authentication. For SSG (without authentication) see project **apollo-nextjs-typescript**.
+-   Make sure GraphQL version works with TypeGraphQL (15.8.0, not 16).
 -   Should logged out user be able to vote?
 -   Branch `apollo` created for Apollo Client (starting at 13:03:00)
 -   How to handle n+1 problem: lots of sql without joins? dataloader
@@ -299,3 +303,19 @@ client
 	"@graphql-codegen/typescript-urql": "^3.3.0",
 }
 ```
+
+===
+
+TODO:
+
+check if all pages still work:
+
+-   register
+-   login
+
+-   forgot
+-   change pass
+-   /post
+-   /post/edit
+-   create
+-   index

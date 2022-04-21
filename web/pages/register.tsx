@@ -12,7 +12,6 @@ import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useIsNotAuth } from '../utils/useIsNotAuth';
-import { withApollo } from '../utils/withApollo';
 
 interface RegisterProps {}
 
@@ -95,4 +94,4 @@ const Register: React.FC<RegisterProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: false })(Register);
+export default Register;

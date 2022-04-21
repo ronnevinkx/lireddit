@@ -7,7 +7,6 @@ import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
 // import { toErrorMap } from '../utils/toErrorMap';
 import { useIsAuth } from '../utils/useIsAuth';
-import { withApollo } from '../utils/withApollo';
 
 interface CreatePostProps {}
 
@@ -77,4 +76,4 @@ const CreatePost: React.FC<CreatePostProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: false })(CreatePost);
+export default CreatePost;

@@ -12,7 +12,6 @@ import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useIsNotAuth } from '../utils/useIsNotAuth';
-import { withApollo } from '../utils/withApollo';
 
 interface LoginProps {}
 
@@ -95,4 +94,4 @@ const Login: React.FC<LoginProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: false })(Login);
+export default Login;

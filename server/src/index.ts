@@ -18,6 +18,7 @@ import { UserResolver } from './resolvers/user';
 import { MyContext } from './types';
 import { createUserLoader } from './utils/createUserLoader';
 import { createVoteLoader } from './utils/createVoteLoader';
+import { timestamp } from './utils/timestamp';
 
 const main = async () => {
 	const conn = await createConnection({
@@ -89,22 +90,10 @@ const main = async () => {
 	apolloServer.applyMiddleware({ app, cors: false });
 
 	app.listen(PORT, () => {
-		const today = new Date();
-		const hours =
-			today.getHours() < 10 ? '0' + today.getHours() : today.getHours();
-		const minutes =
-			today.getMinutes() < 10
-				? '0' + today.getMinutes()
-				: today.getMinutes();
-		const seconds =
-			today.getSeconds() < 10
-				? '0' + today.getSeconds()
-				: today.getSeconds();
-
-		const time = hours + ':' + minutes + ':' + seconds;
-
 		console.log(
-			`${time}: Server is running in ${NODE_ENV} mode on port ${PORT}`
+			`${timestamp()}: 🚀 Server is now running in ${NODE_ENV} mode on http://localhost:${PORT}${
+				apolloServer.graphqlPath
+			}`
 		);
 	});
 };

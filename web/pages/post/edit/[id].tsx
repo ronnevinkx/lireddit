@@ -10,7 +10,6 @@ import { InputField } from '../../../components/InputField';
 import { Layout } from '../../../components/Layout';
 import { useGetIntId } from '../../../utils/useGetIntId';
 import { useIsAuth } from '../../../utils/useIsAuth';
-import { withApollo } from '../../../utils/withApollo';
 
 interface EditPostProps {}
 
@@ -84,4 +83,4 @@ const EditPost: React.FC<EditPostProps> = () => {
 	);
 };
 
-export default withApollo({ ssr: false })(EditPost);
+export default EditPost;
