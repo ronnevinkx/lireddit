@@ -248,17 +248,13 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 ## TODO
 
--   BUG: cannot create post (when logged in) because cookie isn't send to graphql (in apolloClient.ts)
--   BUG: keeping login state? (same as above presumably)
 -   Install Husky with eslint, prettier and conventional commit check, changelog generation...
 -   Deploy to GCP
 -   when creating user, email not available on server, but works locally
--   update cache after posting a post
--   Upgrade all packages (one by one) and see what happens
 
 ## Notes
 
--   This project is SSR because of authentication. For SSG (without authentication) see project **apollo-nextjs-typescript**.
+-   This project is SSR because of authentication. For SSG (without authentication) see project [apollo-nextjs-typescript](https://github.com/ronnevinkx/apollo-nextjs-typescript)
 -   Make sure GraphQL version works with TypeGraphQL (15.8.0, not 16).
 -   Should logged out user be able to vote?
 -   Branch `apollo` created for Apollo Client (starting at 13:03:00)
@@ -272,50 +268,3 @@ Deploy to different server (Vercel), so we can take load off of API.
     codegen.yml wijst naar graphql endpoint en gebruikt typescript-urql plugin
     urql is de graphql client (zoals apollo client er ook een is) en gebruiken we om
     info van de graph te verkrijgen (urql.useQuery e.d.)
-
--   waar dienen al deze packages precies voor?
-
-server
-
-```json
-"dependencies": {
-	"apollo-server-express": "2.16.1",
-	"graphql": "^15.6.1",
-	"type-graphql": "^1.1.1",
-	"typeorm": "^0.2.40",
-},
-```
-
-client
-
-```json
-"dependencies": {
-	"@urql/exchange-graphcache": "^4.3.5",
-	"graphql": "^16.0.0",
-	"graphql-tag": "^2.12.6",
-	"next-urql": "^3.2.1",
-	"urql": "^2.0.5"
-},
-"devDependencies": {
-	"@graphql-codegen/cli": "^2.2.2",
-	"@graphql-codegen/typescript": "^2.3.0",
-	"@graphql-codegen/typescript-operations": "^2.2.0",
-	"@graphql-codegen/typescript-urql": "^3.3.0",
-}
-```
-
-===
-
-TODO:
-
-check if all pages still work:
-
--   register
--   login
-
--   forgot
--   change pass
--   /post
--   /post/edit
--   create
--   index
