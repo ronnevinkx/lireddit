@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import {
 	PostSnippetFragment,
+	useMeQuery,
 	useVoteMutation,
 	VoteMutation
 } from '../__generated__/graphql';
@@ -57,6 +58,9 @@ const updateAfterVote = (
 };
 
 export const UpvoteSection: React.FC<UpvoteSectionProps> = ({ post }) => {
+	const { data, loading } = useMeQuery();
+	const disableButton = loading || !data?.me;
+
 	const [loadingState, setLoadingState] = useState<
 		'upvote-loading' | 'downvote-loading' | 'not-loading'
 	>('not-loading');
@@ -72,17 +76,22 @@ export const UpvoteSection: React.FC<UpvoteSectionProps> = ({ post }) => {
 			<IconButton
 				aria-label="Upvote post"
 				icon={<ChevronUpIcon />}
+				disabled={disableButton}
 				onClick={async () => {
 					if (post.voteStatus === 1) {
 						return;
 					}
 
 					setLoadingState('upvote-loading');
-					await vote({
+					const { errors } = await vote({
 						variables: { postId: post.id, value: 1 },
 						update: cache => updateAfterVote(1, post.id, cache)
 					});
 					setLoadingState('not-loading');
+
+					if (errors) {
+						console.log('ERRORS', errors);
+					}
 				}}
 				colorScheme={post.voteStatus === 1 ? 'green' : undefined}
 				isLoading={loadingState === 'upvote-loading'}
@@ -91,6 +100,7 @@ export const UpvoteSection: React.FC<UpvoteSectionProps> = ({ post }) => {
 			<IconButton
 				aria-label="Downvote post"
 				icon={<ChevronDownIcon />}
+				disabled={disableButton}
 				onClick={async () => {
 					if (post.voteStatus === -1) {
 						return;

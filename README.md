@@ -7,53 +7,53 @@ https://www.youtube.com/watch?v=I6ypD7qv3Z8
 
 ## Frontend Technologies
 
-| Technology             | Purpose                                   |
-| ---------------------- | ----------------------------------------- |
-| Next.js                | SSG and SSR React framework               |
-| TypeScript             | JS-based programming language             |
-| Chakra UI              | Styling framework                         |
-| Formik                 | Helps building forms in React             |
-| Apollo                 | GraphQL client                            |
-| Graphcache             | Configurable, normalized caching for urql |
-| GraphQL Code Generator | Generate types and urql hooks             |
-| next-urql              | SSR for urql in a Next.js project         |
-| dayjs                  | Formatting dates                          |
+| Technology             | Purpose                                                      |
+| ---------------------- | ------------------------------------------------------------ |
+| Next.js                | SSG and SSR React framework                                  |
+| TypeScript             | JS-based programming language                                |
+| Chakra UI              | Styling framework                                            |
+| Formik                 | Helps building forms in React                                |
+| Apollo Client          | GraphQL client                                               |
+| Graphcache             | Configurable, normalized caching for urql                    |
+| GraphQL Code Generator | Generates GraphQL types and hooks                            |
+| next-urql              | SSR for urql in a Next.js project (later replaced by Apollo) |
+| dayjs                  | Formatting dates                                             |
 
 ## Backend Technologies
 
-| Technology            | Purpose                                                 |
-| --------------------- | ------------------------------------------------------- |
-| Express               | Handling middleware                                     |
-| apollo-server-express | Creating GraphQL endpoint                               |
-| TypeScript            | JS-based programming language                           |
-| GraphQL               | Querying our API                                        |
-| type-graphql          | Auto-create schemas for GraphQL from TypeScript         |
-| Postgres              | Database                                                |
-| MikroORM              | Interacting with database (later replaced with TypeORM) |
-| TypeORM               | Interacting with database                               |
-| argon2                | Password hashing                                        |
-| ioredis               | In-memory data store                                    |
-| connect-redis         | Provides Redis session storage for Express              |
-| express-session       | To remember logged in user                              |
-| nodemailer            | Send emails                                             |
-| email-validator       | Validates format of email address                       |
-| dataloader            | Batches multiple SQL statements into 1 for efficiency   |
-| dotenv-safe           | Makes sure env variables are declared                   |
-| gen-env-types         | Generates .env.example and types for env variables      |
+| Technology            | Purpose                                               |
+| --------------------- | ----------------------------------------------------- |
+| Express               | Handling middleware                                   |
+| apollo-server-express | Creating GraphQL endpoint                             |
+| TypeScript            | JS-based programming language                         |
+| GraphQL               | Querying our API                                      |
+| TypeGraphQL           | Auto-create schemas for GraphQL from TypeScript       |
+| Postgres              | Database                                              |
+| MikroORM              | Interacting with database (later replaced by TypeORM) |
+| TypeORM               | Interacting with database                             |
+| argon2                | Password hashing                                      |
+| ioredis               | In-memory data store                                  |
+| connect-redis         | Provides Redis session storage for Express            |
+| express-session       | To remember logged in user                            |
+| nodemailer            | Send emails                                           |
+| email-validator       | Validates format of email address                     |
+| dataloader            | Batches multiple SQL statements into 1 for efficiency |
+| dotenv-safe           | Makes sure env variables are declared                 |
+| gen-env-types         | Generates .env.example and types for env variables    |
 
 ## Frontend
 
 ### GraphQL Code Generator
 
-Install CLI and wizard in project, then run wizard. In generated codegen.yml, replace `typescript-react-apollo` with `typescript-urql`. Deinstall `@graphql-codegen/typescript-react-apollo`. Then run `yarn add -D @graphql-codegen/typescript-urql`.
+Install CLI and wizard in project, then run wizard. In generated codegen.yml, replace `typescript-react-apollo` with `typescript-urql`. Uninstall `@graphql-codegen/typescript-react-apollo`. Then run `yarn add -D @graphql-codegen/typescript-urql`.
 
-When running `yarn gen`, GraphQL Code Generator contacts the GraphQL endpoint to check the schema and generates our GraphQL types and hooks based on files in the `/graphql/` folder. The generator outputs to `/__generated__/graphql.tsx`. From there we can take hooks, so instead of the general `useMutation`, we now have specific hooks like `useLoginMutation` that are typed.
+When running `yarn gen`, GraphQL Code Generator contacts the GraphQL endpoint to check the schema and generates our GraphQL types and hooks based on files in the `/web/graphql/` folder. The generator outputs to `/__generated__/graphql.tsx`. From there we can take hooks, so instead of the general `useMutation`, we now have specific hooks like `useLoginMutation` that are typed.
 
-So our workflow is that for every mutation or query, we greate a `*.graphql` file in the `/graphql/*` folder. Then we run the generator, then we can use the hook from `/__generated__/graphql.tsx`.
+So our workflow is that for every operation (mutation/query/subscription/fragment), we greate a `*.graphql` file in the `/graphql/*` folder. Then we run the generator, so we can use the hook from `/__generated__/graphql.tsx`.
 
 ## urql
 
-Universal React Query Library, alternative to Apollo Client. We can wrap a page in `withUrqlClient(createUrqlClient)(MyPage)` to use urql (mutations, queries) and set ssr with `export default withUrqlClient(createUrqlClient, { ssr: true })(MyPage);` if we like.
+Universal React Query Library, alternative to Apollo Client. We can wrap a page in `withUrqlClient(createUrqlClient)(MyPage)` to use urql (mutations, queries) and set SSR with `export default withUrqlClient(createUrqlClient, { ssr: true })(MyPage);` if we like. Later replaced by Apollo Client.
 
 ### Scripts
 
@@ -71,17 +71,17 @@ Universal React Query Library, alternative to Apollo Client. We can wrap a page 
 ### TypeScript and Node Setup
 
 Open two terminals. In 1: `yarn watch`, in 2: `yarn dev`.
-Now when a TypeScript file changes, it compiles automatically to the dist folder and it's run automatically through nodemon.
+Now when a TypeScript file changes, it compiles automatically to the `dist` folder and it's run automatically through nodemon.
 
-| Script             | Runs Command                                  | Description                                        |
-| ------------------ | --------------------------------------------- | -------------------------------------------------- |
-| `watch`            | `tsc -w`                                      | Watch and compile TS to dist/index.js              |
-| `dev`              | `nodemon dist/index.js`                       | Run and watch dist/index.js                        |
-| `start`            | `node dist/index.js`                          | Run index.js on server                             |
-| `start2`           | `ts-node src/index.ts`                        | -                                                  |
-| `create:migration` | `mikro-orm migration:create`                  | (Removed) Creates migrations based on entities     |
-| `build`            | `tsc`                                         | Builds the server with TypeScript                  |
-| `gen-env`          | `npx gen-env-types .env -o src/env.d.ts -e .` | Generates .env.example and types for env variables |
+| Script             | Runs Command                                  | Description                                          |
+| ------------------ | --------------------------------------------- | ---------------------------------------------------- |
+| `watch`            | `tsc -w`                                      | Watch and compile TS to `dist/index.js`              |
+| `dev`              | `nodemon dist/index.js`                       | Run and watch `dist/index.js`                        |
+| `start`            | `node dist/index.js`                          | Run `index.js` on server                             |
+| `start2`           | `ts-node src/index.ts`                        | -                                                    |
+| `create:migration` | `mikro-orm migration:create`                  | (Removed) Creates migrations based on entities       |
+| `build`            | `tsc`                                         | Builds the server with TypeScript                    |
+| `gen-env`          | `npx gen-env-types .env -o src/env.d.ts -e .` | Generates `.env.example` and types for env variables |
 
 ### Postgres Setup
 
@@ -94,7 +94,7 @@ Simply create a database called `lireddit` with `psql`.
 -   Terminal 3: `yarn dev` on server, this runs and auto-refreshes `dist/index.js` on changes with nodemon. So we basically have a chain.
 -   Terminal 4: `yarn dev` on web frontend client.
 
-Now you can visit the frontend at `http://localhost:3000/`
+Now you can visit the frontend at `http://localhost:3000`
 GraphQL endpoint: `http://localhost:4000/graphql`
 
 ### MikroORM
@@ -103,7 +103,7 @@ Interacting with database, creating tables, selecting data and such. Later repla
 
 `yarn add @mikro-orm/cli @mikro-orm/core @mikro-orm/migrations @mikro-orm/postgresql`
 
-Create a migration: `npx mikro-orm migration:create` on command line. We've also made script for this in package.json, so we can run `yarn create:migration`.
+Create a migration: `npx mikro-orm migration:create` on command line. We've also made a script for this in `package.json`, so we can run `yarn create:migration`.
 
 ### TypeORM
 
@@ -228,7 +228,7 @@ Let this propagate for some time.
    Verify expiry: `dokku letsencrypt:list`
 9. Auto-renew via a cron job: `dokku letsencrypt:cron-job --add`
 
-`https://lireddit-api.ronnevinkx.nl/` should now work with SSL and say "Cannot GET /".
+`https://lireddit-api.ronnevinkx.nl` should now work with SSL and say "Cannot GET /".
 
 ## Frontend Deployment (Web)
 
@@ -246,25 +246,14 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 `chmod +x deploy.sh`
 
-## TODO
-
--   Install Husky with eslint, prettier and conventional commit check, changelog generation...
--   Deploy to GCP
--   when creating user, email not available on server, but works locally
-
 ## Notes
 
--   This project is SSR because of authentication. For SSG (without authentication) see project [apollo-nextjs-typescript](https://github.com/ronnevinkx/apollo-nextjs-typescript)
+-   This project is SSR because of authentication. For an SSG project (without authentication) see [apollo-nextjs-typescript](https://github.com/ronnevinkx/apollo-nextjs-typescript)
 -   Make sure GraphQL version works with TypeGraphQL (15.8.0, not 16).
--   Should logged out user be able to vote?
+-   When creating user, email not available on server, but works locally
 -   Branch `apollo` created for Apollo Client (starting at 13:03:00)
 -   How to handle n+1 problem: lots of sql without joins? dataloader
 -   Best practice to use underscore when not using a parameter, like `(_, res)` instead of `(req, res)` when not using `req`.
--   At end of a thing that needs import, press `ctrl + space` to auto-complete the import statement
 -   Installed `class-validator` to get rid of some TS error on server
--   [Mockaroo](https://www.mockaroo.com/) helped us get dummy data
+-   [Mockaroo](https://www.mockaroo.com/) helped us get dummy data.
 -   Generate `.env` types and `.env.example` with `npx gen-env-types .env -o src/env.d.ts -e .`
--   hoe weet graphql-codegen wat de entities zijn?
-    codegen.yml wijst naar graphql endpoint en gebruikt typescript-urql plugin
-    urql is de graphql client (zoals apollo client er ook een is) en gebruiken we om
-    info van de graph te verkrijgen (urql.useQuery e.d.)
