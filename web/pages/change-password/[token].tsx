@@ -1,13 +1,13 @@
 import { Box, Button, Flex, Link } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
+import type { MeQuery } from '../../__generated__/graphql';
 import {
 	MeDocument,
-	MeQuery,
 	useChangePasswordMutation
 } from '../../__generated__/graphql';
 import { InputField } from '../../components/InputField';

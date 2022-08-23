@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/layout';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { NextPageContext } from 'next';
+import type { NextPageContext } from 'next';
 import NextLink from 'next/link';
 
 import { PostsDocument, usePostsQuery } from '../__generated__/graphql';

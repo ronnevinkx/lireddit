@@ -7,6 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
+		"lint:fix": "next lint --fix",
 		"gen": "graphql-codegen --config codegen.yml",
 		"typecheck": "tsc --noEmit"
 	},
@@ -35,6 +36,7 @@
 		"@graphql-codegen/typescript-operations": "^2.2.0",
 		"@graphql-codegen/typescript-react-apollo": "^3.2.5",
 		"@types/lodash": "^4.14.179",
+		"@typescript-eslint/eslint-plugin": "^5.34.0",
 		"eslint": "^8.1.0",
 		"eslint-config-next": "^12.0.2",
 		"eslint-plugin-simple-import-sort": "^7.0.0",

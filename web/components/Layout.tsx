@@ -1,7 +1,8 @@
 import Head from 'next/head';
 
 import { NavBar } from './NavBar';
-import { Wrapper, WrapperVariant } from './Wrapper';
+import type { WrapperVariant } from './Wrapper';
+import { Wrapper } from './Wrapper';
 
 interface LayoutProps {
 	variant?: WrapperVariant;
