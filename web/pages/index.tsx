@@ -150,7 +150,13 @@ export async function getServerSideProps(context: NextPageContext) {
 		query: PostsDocument,
 		variables: {
 			limit: 15,
-			cursor: null
+			cursor: null,
+			experiments: [
+				{
+					key: 'exp-151-test-posts-algo',
+					variation: 'someOtherAlgo'
+				}
+			]
 		}
 	});
 

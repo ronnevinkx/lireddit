@@ -15,6 +15,11 @@ export type Scalars = {
   Float: number;
 };
 
+export type ExperimentInput = {
+  key: Scalars['String'];
+  variation: Scalars['String'];
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -120,6 +125,7 @@ export type QueryPostArgs = {
 
 export type QueryPostsArgs = {
   cursor?: InputMaybe<Scalars['String']>;
+  experiments?: InputMaybe<Array<ExperimentInput>>;
   limit: Scalars['Int'];
 };
 
@@ -233,6 +239,7 @@ export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Int'];
   cursor?: InputMaybe<Scalars['String']>;
+  experiments?: InputMaybe<Array<ExperimentInput> | ExperimentInput>;
 }>;
 
 
@@ -660,8 +667,8 @@ export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
 export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
 export type PostQueryResult = Apollo.QueryResult<PostQuery, PostQueryVariables>;
 export const PostsDocument = gql`
-    query Posts($limit: Int!, $cursor: String) {
-  posts(limit: $limit, cursor: $cursor) {
+    query Posts($limit: Int!, $cursor: String, $experiments: [ExperimentInput!]) {
+  posts(limit: $limit, cursor: $cursor, experiments: $experiments) {
     hasMore
     posts {
       ...PostSnippet
@@ -684,6 +691,7 @@ export const PostsDocument = gql`
  *   variables: {
  *      limit: // value for 'limit'
  *      cursor: // value for 'cursor'
+ *      experiments: // value for 'experiments'
  *   },
  * });
  */

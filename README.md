@@ -246,6 +246,8 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 `chmod +x deploy.sh`
 
+Run server deployment script: `/server/scripts/deploy.sh`
+
 ## Notes
 
 -   This project is SSR because of authentication. For an SSG project (without authentication) see [apollo-nextjs-typescript](https://github.com/ronnevinkx/apollo-nextjs-typescript)
