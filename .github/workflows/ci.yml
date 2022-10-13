@@ -1,0 +1,27 @@
+name: Continuous Integration
+on: pull_request
+
+jobs:
+    CheckTypeScript:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '16'
+
+            - name: Install yarn
+              run: npm install -g yarn
+
+            - name: Install node modules
+              run: cd web && yarn
+
+            - name: Check TypeScript
+              run: yarn typecheck
+
+    #Linting:
+    #runs-on: ubuntu-latest
+    #steps:
+    #- uses: actions/checkout@v2
