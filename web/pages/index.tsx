@@ -2,31 +2,29 @@ import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/layout';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import type { NextPageContext } from 'next';
 import NextLink from 'next/link';
-import { withUrqlClient } from 'next-urql';
-import { useState } from 'react';
 
-import { usePostsQuery } from '../__generated__/graphql';
+import { PostsDocument, usePostsQuery } from '../__generated__/graphql';
 import EditDeletePostButtons from '../components/EditDeletePostButtons';
 import { Layout } from '../components/Layout';
 import { UpvoteSection } from '../components/UpvoteSection';
-import { createUrqlClient } from '../utils/createUrqlClient';
+import { addApolloState, initializeApollo } from '../utils/apolloClient';
 
 dayjs.extend(relativeTime);
 
 interface IndexProps {}
 
 const Index: React.FC<IndexProps> = () => {
-	const [variables, setVariables] = useState({
-		limit: 15,
-		cursor: null as null | string
+	const { data, loading, fetchMore, variables } = usePostsQuery({
+		variables: {
+			limit: 15,
+			cursor: null
+		},
+		notifyOnNetworkStatusChange: true
 	});
 
-	const [{ data, fetching }] = usePostsQuery({
-		variables
-	});
-
-	if (!fetching && !data) {
+	if (!loading && !data) {
 		return <div>Failed to load posts.</div>;
 	}
 
@@ -36,7 +34,7 @@ const Index: React.FC<IndexProps> = () => {
 				<Heading fontSize="lg">Latest posts</Heading>
 			</Box>
 			<Box mt={4}>
-				{!data && fetching ? (
+				{!data && loading ? (
 					<div>Loading...</div>
 				) : (
 					<Stack spacing={8}>
@@ -90,14 +88,41 @@ const Index: React.FC<IndexProps> = () => {
 				<Flex>
 					<Button
 						onClick={() =>
-							setVariables({
-								...variables,
-								cursor: data.posts.posts[
-									data.posts.posts.length - 1
-								].createdAt
+							fetchMore({
+								variables: {
+									limit: variables?.limit,
+									cursor: data.posts.posts[
+										data.posts.posts.length - 1
+									].createdAt
+								}
+								// updateQuery: (
+								// 	previousValue,
+								// 	{ fetchMoreResult }
+								// ): PostsQuery => {
+								// 	if (!fetchMoreResult) {
+								// 		return previousValue;
+								// 	}
+
+								// 	return {
+								// 		__typename: 'Query',
+								// 		posts: {
+								// 			__typename: 'PaginatedPosts',
+								// 			hasMore: (
+								// 				fetchMoreResult as PostsQuery
+								// 			).posts.hasMore,
+								// 			posts: [
+								// 				...(previousValue as PostsQuery)
+								// 					.posts.posts,
+								// 				...(
+								// 					fetchMoreResult as PostsQuery
+								// 				).posts.posts
+								// 			]
+								// 		}
+								// 	};
+								// }
 							})
 						}
-						isLoading={fetching}
+						isLoading={loading}
 						m="auto"
 						my={8}
 					>
@@ -112,4 +137,32 @@ const Index: React.FC<IndexProps> = () => {
 	);
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+// getStaticProps works and gives us SSG
+// getServerSideProps works and gives us SSR
+// important with getServerSideProps to pass context as it contains our qid cookie,
+// otherwise voteStatus (did the logged-in user vote for a post?) wouldn't be able
+// to resolve properly. on the client this works eitherway, but to get it working
+// on the server, make sure to pass the context.
+export async function getServerSideProps(context: NextPageContext) {
+	const apolloClient = initializeApollo(null, context);
+
+	await apolloClient.query({
+		query: PostsDocument,
+		variables: {
+			limit: 15,
+			cursor: null,
+			experiments: [
+				{
+					key: 'exp-151-test-posts-algo',
+					variation: 'someOtherAlgo'
+				}
+			]
+		}
+	});
+
+	return addApolloState(apolloClient, {
+		props: {}
+	});
+}
+
+export default Index;

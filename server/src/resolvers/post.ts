@@ -20,6 +20,15 @@ import { Vote } from '../entities/Vote';
 import { User } from '../entities/User';
 
 @InputType()
+export class ExperimentInput {
+	@Field()
+	key: string;
+
+	@Field()
+	variation: string;
+}
+
+@InputType()
 export class PostInput {
 	@Field()
 	title: string;
@@ -74,7 +83,9 @@ export class PostResolver {
 	@Query(() => PaginatedPosts)
 	async posts(
 		@Arg('limit', () => Int) limit: number,
-		@Arg('cursor', () => String, { nullable: true }) cursor: string | null
+		@Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+		@Arg('experiments', () => [ExperimentInput], { nullable: true })
+		experiments: null
 	): Promise<PaginatedPosts> {
 		// return Post.find({});
 		// fetch one post extra to see if hasMore should be true (for pagination)
@@ -92,6 +103,9 @@ export class PostResolver {
 			replacements.push(new Date(parseInt(cursor)));
 			// cursorIndex = replacements.length;
 		}
+
+		// handle experiment input
+		console.log('CHECK experiments', experiments);
 
 		const posts = await getConnection().query(
 			`
