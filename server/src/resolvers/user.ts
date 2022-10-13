@@ -78,14 +78,19 @@ export class UserResolver {
 			return { errors };
 		}
 
-		const hashedPassword = await argon2.hash(options.password);
-		const user = await User.create({
-			email: options.email,
-			username: options.username,
-			password: hashedPassword
-		}).save();
+		let user;
 
 		try {
+			const hashedPassword = await argon2.hash(options.password);
+
+			user = await User.create({
+				email: options.email,
+				username: options.username,
+				password: hashedPassword
+			}).save();
+
+			// log in newly registered user
+			req.session.userId = user.id;
 		} catch (error) {
 			// duplicate username/email error
 			if (error.detail.includes('already exists')) {
@@ -103,9 +108,6 @@ export class UserResolver {
 				};
 			}
 		}
-
-		// log in newly registered user
-		req.session.userId = user.id;
 
 		return { user };
 	}
