@@ -40,6 +40,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^12.1.4",
 		"@types/lodash": "^4.14.179",
+		"@types/react": "17.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.34.0",
 		"eslint": "^8.1.0",
 		"eslint-config-next": "^12.0.2",

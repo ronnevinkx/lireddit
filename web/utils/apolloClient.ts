@@ -1,17 +1,13 @@
-import {
-	ApolloClient,
-	HttpLink,
-	InMemoryCache,
-	NormalizedCacheObject
-} from '@apollo/client';
+import type { NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 import merge from 'deepmerge';
 import fetch from 'isomorphic-unfetch';
 import isEqual from 'lodash/isEqual';
-import { NextPageContext } from 'next';
-import { AppProps } from 'next/app';
+import type { NextPageContext } from 'next';
+import type { AppProps } from 'next/app';
 import { useMemo } from 'react';
 
-import { PaginatedPosts } from '../__generated__/graphql';
+import type { PaginatedPosts } from '../__generated__/graphql';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
@@ -100,7 +96,9 @@ export function addApolloState(
 	client: ApolloClient<NormalizedCacheObject>,
 	pageProps: AppProps['pageProps']
 ) {
+	// @ts-ignore
 	if (pageProps?.props) {
+		// @ts-ignore
 		pageProps.props[APOLLO_STATE_PROP_NAME] = client.cache.extract();
 	}
 
@@ -108,6 +106,7 @@ export function addApolloState(
 }
 
 export function useApollo(pageProps: AppProps['pageProps']) {
+	// @ts-ignore
 	const state = pageProps[APOLLO_STATE_PROP_NAME];
 	const store = useMemo(() => initializeApollo(state), [state]);
 	return store;
