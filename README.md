@@ -85,10 +85,12 @@ Now when a TypeScript file changes, it compiles automatically to the `dist` fold
 
 ### Postgres Setup
 
-Simply create a database called `lireddit` with `psql`.
+1. Install [Postgres app](https://postgresapp.com/downloads.html)
+2. Create a database called `lireddit` with `psql`.
 
 ### Local Development
 
+-   Make sure Postgres is running with the database mentioned in `server/.env`
 -   Terminal 1: `yarn watch` on server, this compiles TypeScript to dist folder on changes.
 -   Terminal 2: `redis-server /usr/local/etc/redis.conf`, this runs Redis. If Redis already runs (perhaps after updating VS Code), shut it down first with `npx kill-port 6379`.
 -   Terminal 3: `yarn dev` on server, this runs and auto-refreshes `dist/index.js` on changes with nodemon. So we basically have a chain.
@@ -247,6 +249,13 @@ Deploy to different server (Vercel), so we can take load off of API.
 `chmod +x deploy.sh`
 
 Run server deployment script: `/server/scripts/deploy.sh`
+
+## Unit Testing
+
+1. Add the following dev dependencies to the client for unit testing:
+   `yarn add -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom`
+
+2. Add a `jest.config.js` file to the client root, like described here: `https://nextjs.org/docs/testing` Also add a `jest.setup.js` file.
 
 ## Notes
 
