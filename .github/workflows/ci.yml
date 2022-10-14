@@ -2,6 +2,9 @@ name: Continuous Integration
 on: pull_request
 
 jobs:
+    ####################################
+    # Client typecheck
+    #####################################
     CheckClientTypeScript:
         runs-on: ubuntu-latest
         defaults:
@@ -24,7 +27,24 @@ jobs:
             - name: Check TypeScript
               run: yarn typecheck
 
-    #Linting:
-    #runs-on: ubuntu-latest
-    #steps:
-    #- uses: actions/checkout@v2
+    ####################################
+    # Client unit testing
+    #####################################
+    RunTests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '16'
+
+            - name: Install yarn
+              run: npm install -g yarn
+
+            - name: Install node modules
+              run: yarn
+
+            - name: Execute tests
+              run: yarn jest --passWithNoTests --silent

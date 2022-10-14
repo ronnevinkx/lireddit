@@ -248,6 +248,13 @@ Deploy to different server (Vercel), so we can take load off of API.
 
 Run server deployment script: `/server/scripts/deploy.sh`
 
+## Unit Testing
+
+1. Add the following dev dependencies to the client for unit testing:
+   `yarn add -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom`
+
+2. Add a `jest.config.js` file to the client root, like described here: `https://nextjs.org/docs/testing` Also add a `jest.setup.js` file.
+
 ## Notes
 
 -   This project is SSR because of authentication. For an SSG project (without authentication) see [apollo-nextjs-typescript](https://github.com/ronnevinkx/apollo-nextjs-typescript)
