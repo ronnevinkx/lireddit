@@ -28,6 +28,39 @@ jobs:
               run: yarn typecheck
 
     ####################################
+    # Client linting
+    #####################################
+    Linting:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./web
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '16'
+
+            - name: Install yarn
+              run: npm install -g yarn
+
+            - name: Install node modules
+              run: yarn
+
+            - name: Check TypeScript
+              run: yarn typecheck
+
+            # Run Prettier
+            - name: Run Prettier
+              run: yarn prettier
+
+            # Run Eslint
+            - name: Run Eslint
+              run: yarn lint:ci
+
+    ####################################
     # Client unit testing
     #####################################
     RunTests:

@@ -1,0 +1,9 @@
+_material/
+dist/
+node_modules/
+.next/
+.vercel/
+public/
+build/
+*.md
+__generated__/
