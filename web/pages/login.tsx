@@ -3,12 +3,8 @@ import { Form, Formik } from 'formik';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import type {
-	MeQuery} from '../__generated__/graphql';
-import {
-	MeDocument,
-	useLoginMutation
-} from '../__generated__/graphql';
+import type { MeQuery } from '../__generated__/graphql';
+import { MeDocument, useLoginMutation } from '../__generated__/graphql';
 import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
 import { toErrorMap } from '../utils/toErrorMap';

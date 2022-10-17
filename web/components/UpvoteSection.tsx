@@ -1,4 +1,4 @@
-import type { ApolloCache} from '@apollo/client';
+import type { ApolloCache } from '@apollo/client';
 import { gql } from '@apollo/client';
 import { IconButton } from '@chakra-ui/button';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
@@ -9,10 +9,7 @@ import type {
 	PostSnippetFragment,
 	VoteMutation
 } from '../__generated__/graphql';
-import {
-	useMeQuery,
-	useVoteMutation
-} from '../__generated__/graphql';
+import { useMeQuery, useVoteMutation } from '../__generated__/graphql';
 
 interface UpvoteSectionProps {
 	post: PostSnippetFragment;
